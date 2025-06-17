@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 const xml2js = require('xml2js');
@@ -7,8 +6,9 @@ const he = require('he');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+// Credenciais fixas do Supabase
+const supabaseUrl = 'https://ejsxrtwmeqsheproqdas.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqc3hydHdtZXFzaGVwcm9xZGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MDI3MTgsImV4cCI6MjA2NDM3ODcxOH0.9rwcwO8KFl8qXypFtuTmBAOc6fx0olbr8N7Uz95AFDw';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 function sanitizeForXML(str) {
@@ -48,8 +48,8 @@ async function getEPG(useMockData = false) {
 
         // Intervalo: dia atual até +6 dias
         const now = new Date();
-        const startDate = now.toISOString().split('T')[0]; // Ex.: 2025-06-14
-        const endDate = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 23:59:59'; // Ex.: 2025-06-20
+        const startDate = now.toISOString().split('T')[0]; // Ex.: 2025-06-16
+        const endDate = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 23:59:59'; // Ex.: 2025-06-22
         console.log('Intervalo de consulta:', { startDate, endDate });
 
         if (useMockData) {
@@ -167,7 +167,7 @@ async function getEPG(useMockData = false) {
 
 app.get('/epg', async (req, res) => {
     try {
-        const useMockData = process.env.USE_MOCK_DATA === 'true';
+        const useMockData = false; // Desativa mock data
         const xml = await getEPG(useMockData);
         res.set('Content-Type', 'application/xml');
         res.send(xml);
@@ -178,7 +178,7 @@ app.get('/epg', async (req, res) => {
 
 app.get('/debug', async (req, res) => {
     try {
-        const useMockData = process.env.USE_MOCK_DATA === 'true';
+        const useMockData = false; // Desativa mock data
         let canais, programacoes, logotipos;
 
         const now = new Date();
